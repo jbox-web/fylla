@@ -1,6 +1,6 @@
-lib = File.expand_path("lib", __dir__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "fylla/version"
+# frozen_string_literal: true
+
+require_relative "lib/fylla/version"
 
 Gem::Specification.new do |spec|
   spec.name = "fylla"
@@ -28,13 +28,5 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 2.0"
-  spec.add_development_dependency "codecov", "~> 0.1.14"
-  spec.add_development_dependency "minitest", "~> 5.0"
-  spec.add_development_dependency "minitest-hooks", "~> 1.5.0"
-  spec.add_development_dependency "rake", "~> 13"
-  spec.add_development_dependency "rubocop", "~> 1.21"
-  spec.add_development_dependency "rubocop-minitest", "~> 0.27.0"
-  spec.add_development_dependency "rubocop-rake", "~> 0.6.0"
   spec.add_dependency "thor", ">= 0.19.0"
 end
