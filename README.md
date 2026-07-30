@@ -1,8 +1,8 @@
+# Fylla
+
 [![Build Status](https://travis-ci.com/snowe2010/fylla.svg?branch=master)](https://travis-ci.com/snowe2010/fylla)
 [![codecov](https://codecov.io/gh/snowe2010/fylla/branch/master/graph/badge.svg)](https://codecov.io/gh/snowe2010/fylla)
 [![Ruby gem](https://img.shields.io/gem/v/fylla.svg)](https://rubygems.org/gems/fylla)
-
-# Fylla
 
 Fylla, the Norse word for `complete`, is an autocompletion script generator for the [Thor](whatisthor.com) framework.
 
@@ -18,14 +18,17 @@ gem 'fylla'
 
 And then execute:
 
-    $ bundle
+```sh
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install fylla
+```sh
+$ gem install fylla
+```
 
 ## Usage
-
 
 ```ruby
 require 'thor'
