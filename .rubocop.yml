@@ -1,24 +1,17 @@
-inherit_from: .rubocop_todo.yml
-
-Layout/EndOfLine:
-  EnforcedStyle: lf
-Metrics/LineLength:
-  Max: 100
-
-AllCops:
-  TargetRubyVersion: 2.6
-
-Style/StringLiterals:
-  Enabled: true
-  EnforcedStyle: double_quotes
-
-Style/StringLiteralsInInterpolation:
-  Enabled: true
-  EnforcedStyle: double_quotes
-
-Layout/LineLength:
-  Max: 120
-
-require:
+---
+plugins:
+  - rubocop-performance
   - rubocop-rake
   - rubocop-minitest
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.2
+  Exclude:
+    - bin/*
+
+Gemspec/RequireMFA:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
