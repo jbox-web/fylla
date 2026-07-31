@@ -14,6 +14,11 @@ class CompletionTest < Minitest::Test
           "-h[Show help information]" \
           "--help[Show help information]"
       }
+      function _test_tree {
+        _arguments \
+          "-h[Show help information]" \
+          "--help[Show help information]"
+      }
       function _test_generate_completions {
         _arguments \
           "-h[Show help information]" \
@@ -75,6 +80,7 @@ class CompletionTest < Minitest::Test
           'generate_completions:generate completions'
           'help:Describe available commands or one specific command'
           'sub:a subcommand'
+          'tree:Print a tree of all available commands'
         )
 
         _arguments \
@@ -94,6 +100,9 @@ class CompletionTest < Minitest::Test
               ;;
               sub)
                 _test_sub
+              ;;
+              tree)
+                _test_tree
               ;;
             esac
           ;;

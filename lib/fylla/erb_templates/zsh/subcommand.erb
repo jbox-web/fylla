@@ -13,7 +13,7 @@ function _<%= @executable_name %><%= context_name %> {
   <%- unless class_options.nil? -%>
     <%- class_options.each do |option| -%>
       <%- option.aliases.each do |al| -%>
-    "-<%= al %>[<%= option.description.gsub('"', %q|\\"|) %>]" \
+    "<%= al %>[<%= option.description.gsub('"', %q|\\"|) %>]" \
       <%- end -%>
     "--<%= option.name %>[<%= option.description.gsub('"', %q|\\"|) %>]" \
     <%- end -%>

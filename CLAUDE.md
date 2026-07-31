@@ -25,8 +25,10 @@ Running a **single test method** must bypass rake — `TESTOPTS="-n /pattern/"` 
 bundle exec ruby -Ilib -Itest test/fylla_test.rb -n /version/
 ```
 
-CI (`.github/workflows/test.yaml`) runs `bundle exec rake` on Ruby 3.1.2 only. RuboCop targets
-Ruby 2.6 (`.rubocop.yml`), so avoid newer syntax in `lib/`.
+RuboCop targets Ruby 3.2 (`.rubocop.yml`), matching `required_ruby_version` in the gemspec.
+
+CI (`.github/workflows/test.yaml`) still pins Ruby 3.1.2, which contradicts that gemspec floor —
+Bundler cannot resolve the `gemspec` directive on 3.1, so the workflow is currently unrunnable.
 
 ## Load-order constraint (the central gotcha)
 

@@ -8,7 +8,9 @@ module Fylla
     def initialize(name, description, aliases, enum, filter, type)
       @name = name
       @description = description
-      @aliases = aliases
+      # Thor >= 1.3 already stores aliases dash-prefixed ("-a"), older versions
+      # store them bare ("a"). Normalize so templates can emit them verbatim.
+      @aliases = Array(aliases).map { |a| a.to_s.sub(/^(?!-)/, "-") }
       # used for switches that take values (everything, but not necessary for boolean)
       @equals_type = type == :boolean ? "" : "="
       @action = ""

@@ -16,6 +16,14 @@ class BashTest < Minitest::Test
         options+=("-h")
         COMPREPLY=($(compgen -W "${options[*]}" -- "$cur"))
       }
+      _test_tree ()
+      {
+        local cur="${COMP_WORDS[COMP_CWORD]}"
+        local options=()
+        options+=("--help")
+        options+=("-h")
+        COMPREPLY=($(compgen -W "${options[*]}" -- "$cur"))
+      }
       _test_generate ()
       {
         local cur="${COMP_WORDS[COMP_CWORD]}"
@@ -53,6 +61,9 @@ class BashTest < Minitest::Test
                 help)
                   _test_help
                   return ;;
+                tree)
+                  _test_tree
+                  return ;;
                 generate)
                   _test_generate
                   return ;;
@@ -68,7 +79,7 @@ class BashTest < Minitest::Test
         done
 
         local cur="${COMP_WORDS[COMP_CWORD]}"
-        COMPREPLY=($(compgen -W "help generate plain " -- "$cur"))
+        COMPREPLY=($(compgen -W "help tree generate plain " -- "$cur"))
       }
       complete -F _test test
     HERE
@@ -83,6 +94,14 @@ class BashTest < Minitest::Test
   def test_bash_single_subcommand_with_options
     expected = <<~HERE
       _test_help ()
+      {
+        local cur="${COMP_WORDS[COMP_CWORD]}"
+        local options=()
+        options+=("--help")
+        options+=("-h")
+        COMPREPLY=($(compgen -W "${options[*]}" -- "$cur"))
+      }
+      _test_tree ()
       {
         local cur="${COMP_WORDS[COMP_CWORD]}"
         local options=()
@@ -128,6 +147,9 @@ class BashTest < Minitest::Test
                 help)
                   _test_help
                   return ;;
+                tree)
+                  _test_tree
+                  return ;;
                 generate)
                   _test_generate
                   return ;;
@@ -143,7 +165,7 @@ class BashTest < Minitest::Test
         done
 
         local cur="${COMP_WORDS[COMP_CWORD]}"
-        COMPREPLY=($(compgen -W "help generate plain " -- "$cur"))
+        COMPREPLY=($(compgen -W "help tree generate plain " -- "$cur"))
       }
       complete -F _test test
     HERE
@@ -158,6 +180,14 @@ class BashTest < Minitest::Test
   def test_bash_nested_subcommand_with_options
     expected = <<~HERE
       _test_help ()
+      {
+        local cur="${COMP_WORDS[COMP_CWORD]}"
+        local options=()
+        options+=("--help")
+        options+=("-h")
+        COMPREPLY=($(compgen -W "${options[*]}" -- "$cur"))
+      }
+      _test_tree ()
       {
         local cur="${COMP_WORDS[COMP_CWORD]}"
         local options=()
@@ -306,6 +336,9 @@ class BashTest < Minitest::Test
                 help)
                   _test_help
                   return ;;
+                tree)
+                  _test_tree
+                  return ;;
                 generate)
                   _test_generate
                   return ;;
@@ -327,7 +360,7 @@ class BashTest < Minitest::Test
         done
 
         local cur="${COMP_WORDS[COMP_CWORD]}"
-        COMPREPLY=($(compgen -W "help generate plain subcommand subcommand2 --class-opt" -- "$cur"))
+        COMPREPLY=($(compgen -W "help tree generate plain subcommand subcommand2 --class-opt" -- "$cur"))
       }
       complete -F _test test
     HERE

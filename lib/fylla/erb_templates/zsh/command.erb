@@ -5,7 +5,7 @@ function _<%= @executable_name %><%= context_name %> {
       <%- desc = option.description.gsub('"', %q|\\"|) -%>
     "--<%= option.name %><%= option.equals_type %>[<%= desc %>]<%= option.action %>" \
       <%- option.aliases.each do |al| -%>
-    "-<%= al %><%= option.equals_type %>[<%= desc %>]<%= option.action %>" \
+    "<%= al %><%= option.equals_type %>[<%= desc %>]<%= option.action %>" \
       <%- end -%>
     <%- end -%>
   <%- end -%>
