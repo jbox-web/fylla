@@ -55,8 +55,10 @@ with a method the host application declares.
    removes the "no top-level command" special case from everything downstream. An empty command
    name is therefore meaningful, not a bug; the bash `subcommand.erb` falls back to
    `@executable_name` for it.
-2. `#find_commands` zips `Thor.commands` against `Thor.subcommand_classes`: a nil match means a
-   leaf → `ParsedCommand`; otherwise recurse → `ParsedSubcommand`. `#aliased_commands` then adds
+2. `#find_commands` zips `Thor.all_commands` against `Thor.subcommand_classes`: a nil match means a
+   leaf → `ParsedCommand`; otherwise recurse → `ParsedSubcommand`. `all_commands`, not `commands`,
+   at *every* level: a Thor class inherits its superclass's commands, and those are as invocable as
+   its own — hence `help` and `tree` in every generated function list. `#aliased_commands` then adds
    one node per entry of `Thor.map`, skipping three cases: flag aliases (Thor injects `-h`, `-?`,
    `--help`, `-D`, `-t` and `--tree` into every app), a name already carried by a command, and
    aliases pointing at a subcommand, which would duplicate the whole nested function tree.

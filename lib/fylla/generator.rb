@@ -121,7 +121,11 @@ module Fylla
         return ParsedCommand.new(command.description, command.name, options)
       end
 
-      commands = find_commands(subcommand_class.commands, subcommand_class.subcommand_classes,
+      # all_commands, not commands: a subcommand class inherits the commands of
+      # its superclass, and those are just as invocable as its own. Reading
+      # +commands+ here dropped every inherited one from the nested levels while
+      # #root_command already read +all_commands+ at the top.
+      commands = find_commands(subcommand_class.all_commands, subcommand_class.subcommand_classes,
                                subcommand_class.map)
       ParsedSubcommand.new(command.name, command.description, commands,
                            subcommand_class.class_options.values)

@@ -24,6 +24,21 @@ RSpec.describe Fylla::Thor::CompletionGenerator do
           "-h[Show help information]" \
           "--help[Show help information]"
       }
+      function _test_sub_help {
+        _arguments \
+          "-h[Show help information]" \
+          "--help[Show help information]"
+      }
+      function _test_sub_tree {
+        _arguments \
+          "-h[Show help information]" \
+          "--help[Show help information]"
+      }
+      function _test_sub_generate_completions {
+        _arguments \
+          "-h[Show help information]" \
+          "--help[Show help information]"
+      }
       function _test_sub_noopts {
         _arguments \
           "-h[Show help information]" \
@@ -35,18 +50,15 @@ RSpec.describe Fylla::Thor::CompletionGenerator do
           "-h[Show help information]" \
           "--help[Show help information]"
       }
-      function _test_sub_help {
-        _arguments \
-          "-h[Show help information]" \
-          "--help[Show help information]"
-      }
       function _test_sub {
         local line
 
         local -a commands
         commands=(
+          'generate_completions:generate completions'
           'help:Describe subcommands or one specific subcommand'
           'noopts:subcommand that takes no options'
+          'tree:Print a tree of all available commands'
           'withopts:subcommand that takes options'
         )
 
@@ -59,11 +71,17 @@ RSpec.describe Fylla::Thor::CompletionGenerator do
         case $state in
           args)
             case $line[1] in
+              generate_completions)
+                _test_sub_generate_completions
+              ;;
               help)
                 _test_sub_help
               ;;
               noopts)
                 _test_sub_noopts
+              ;;
+              tree)
+                _test_sub_tree
               ;;
               withopts)
                 _test_sub_withopts

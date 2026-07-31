@@ -60,7 +60,9 @@ RSpec.describe Fylla::Thor::CompletionGenerator do
 
             local -a commands
             commands=(
+              'generate_completions:generate completions'
               'help:Describe subcommands or one specific subcommand'
+              'tree:Print a tree of all available commands'
               'withopts:subcommand that takes options'
             )
 

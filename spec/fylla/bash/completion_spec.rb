@@ -78,7 +78,14 @@ RSpec.describe Fylla::Thor::CompletionGenerator do
     end
 
     it "offers the inherited class option inside a subcommand, as zsh does" do
-      expect(script).to include(%(COMPREPLY=($(compgen -W "plain help --class-opt" -- "$cur"))))
+      expect(script).to include(%(COMPREPLY=($(compgen -W "help tree generate plain --class-opt" -- "$cur"))))
+    end
+
+    # Bash::CLI::Subcommand inherits +generate+ from ThorHelper, so
+    # `test subcommand generate` runs. Only #root_command read all_commands, so
+    # every nested level dropped whatever its class inherited.
+    it "offers the commands a nested subcommand inherits from its superclass" do
+      expect(script).to include(%(compgen -W "help tree generate plain --class-opt"))
     end
   end
 

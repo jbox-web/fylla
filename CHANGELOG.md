@@ -34,6 +34,10 @@
 * Emit option aliases with a single dash. Thor stores them dash-prefixed since 1.3, and the
   templates added one of their own, so generated scripts offered `--a` where the alias is `-a` —
   a switch Thor rejects at runtime. **Generated scripts change accordingly.**
+* Offer the commands a subcommand class inherits from its superclass. Only the top level read
+  Thor's `all_commands`; every nested level read `commands`, which holds a class's own commands
+  alone. A subcommand declared on a shared base class was invocable but never completed, and
+  Thor's own `tree` was missing below the top level. **Generated scripts change accordingly.**
 
 **Removed**
 
