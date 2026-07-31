@@ -11,8 +11,33 @@ SimpleCov.start do
   skip "spec/"
 end
 
+module FyllaTest
+  # Run a Thor application and return what it wrote on stdout. Every fixture
+  # prints its completion script, so this is what the examples assert on.
+  def capture_stdout
+    original = $stdout
+    $stdout = StringIO.new
+    yield
+    $stdout.string
+  ensure
+    $stdout = original
+  end
+
+  def zsh_script(klass, executable_name = "test")
+    Fylla.load(executable_name)
+    capture_stdout { klass.start(["generate_completions"]) }
+  end
+
+  def bash_script(klass, executable_name = "test")
+    Fylla.load(executable_name)
+    capture_stdout { klass.start(["generate"]) }
+  end
+end
+
 # Configure RSpec
 RSpec.configure do |config|
+  config.include FyllaTest
+
   config.color = true
   config.fail_fast = false
 
@@ -28,30 +53,6 @@ RSpec.configure do |config|
   config.disable_monkey_patching!
 
   config.raise_errors_for_deprecations!
-end
-
-module FyllaTest
-end
-
-# Run a Thor application and return what it wrote on stdout. Every fixture
-# prints its completion script, so this is what the examples assert on.
-def capture_stdout
-  original = $stdout
-  $stdout = StringIO.new
-  yield
-  $stdout.string
-ensure
-  $stdout = original
-end
-
-def zsh_script(klass, executable_name = "test")
-  Fylla.load(executable_name)
-  capture_stdout { klass.start(["generate_completions"]) }
-end
-
-def bash_script(klass, executable_name = "test")
-  Fylla.load(executable_name)
-  capture_stdout { klass.start(["generate"]) }
 end
 
 # Load our gem. It must be loaded before any Thor class is declared, otherwise

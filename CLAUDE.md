@@ -12,23 +12,25 @@ that tree through ERB templates.
 ## Commands
 
 ```bash
-bin/rake                                 # default task: test + rubocop
-bin/rake test                            # all tests
-bin/rake test TEST=test/zsh/enum_test.rb # one test file
-bin/rubocop                              # lint only
-```
-
-Running a **single test method** must bypass rake — `TESTOPTS="-n /pattern/"` is swallowed by
-`Rake::TestTask` and interpreted as a filename:
-
-```bash
-bundle exec ruby -Ilib -Itest test/fylla_test.rb -n /version/
+bundle install                              # install dependencies
+bin/rake                                    # default task: spec
+bin/rspec                                   # all examples
+bin/rspec spec/fylla/zsh/enum_spec.rb       # one file
+bin/rspec spec/fylla/zsh/enum_spec.rb:15    # one example, by line
+bin/rubocop                                 # lint (its own CI job, not part of rake)
 ```
 
 RuboCop targets Ruby 3.2 (`.rubocop.yml`), matching `required_ruby_version` in the gemspec.
+CI (`.github/workflows/ci.yml`) runs `bin/rubocop` once and `bin/rspec` across the Ruby matrix,
+then publishes `coverage/coverage.json` to qlty.
 
-CI (`.github/workflows/test.yaml`) still pins Ruby 3.1.2, which contradicts that gemspec floor —
-Bundler cannot resolve the `gemspec` directive on 3.1, so the workflow is currently unrunnable.
+## Packaging invariant
+
+`s.files` in the gemspec must keep matching `lib/**/*.erb`. The generator reads its templates from
+disk at runtime, and the suite loads `lib/` straight from the checkout, so it never notices a
+template missing from the built gem — a gem shipped without them raises `Errno::ENOENT` on the
+first call. Verify a packaging change by building and installing into a scratch `GEM_HOME`, not by
+running the suite.
 
 ## Load-order constraint (the central gotcha)
 
@@ -74,14 +76,27 @@ Option description precedence: `completion` → `description` → `banner` → u
 - `comma_array_extension.rb` overrides `Thor::Arguments#parse_array` so `--opt a,b,c` is split on
   commas (POSIX `getopt_long` style) instead of Thor's default space-separated consumption.
 
-## Tests
+## Specs
 
-Tests are golden-output tests: they build a Thor CLI fixture, generate the completion script, and
-compare against a heredoc. Changing template whitespace or option ordering will fail many of them
-at once.
+Examples are golden-output tests: they run a Thor fixture, capture the generated script, and match
+it against a heredoc. Changing template whitespace or option ordering will fail many at once.
 
-- `test/zsh/test_commands/` and `test/bash/bash_clis/` hold the Thor fixtures. All zsh fixtures
-  subclass `Zsh::ThorTest`, which defines the `generate_completions` command — hence that command
-  appears in nearly every expected zsh script.
-- `test_helper.rb` starts SimpleCov and defines `matches(expected)` for escaped-literal regexes.
-- Test classes mutate global `ARGV` and call `Fylla.load` in `setup`; keep that pattern.
+- `spec/support/` holds the Thor applications, grouped by target shell. All zsh fixtures subclass
+  `Zsh::ThorTest`, which defines the `generate_completions` command — hence that command appears in
+  nearly every expected zsh script. These files print on stdout on purpose, so they are excluded
+  from `RSpec/Output`.
+- `spec/spec_helper.rb` defines `FyllaTest`, included into every example group via
+  `config.include`. It exposes `zsh_script(klass, name)`, `bash_script(klass, name)` and
+  `capture_stdout`. They call `Fylla.load` and return the script as a String, so examples assert
+  with `expect(script).to include(...)` rather than wrapping the call in `expect { }`. Adding a
+  helper there without the `config.include` fails every example at once with `NoMethodError`.
+- `spec/fylla/` is split by concern (zsh options, zsh enums, zsh descriptions, bash scripts, the
+  Thor argument extension), not one file per class — hence the `RSpec/SpecFilePathFormat` exclusion.
+- Three examples are **characterization tests**, flagged as such in comments: the comma split
+  deciding on the first token only, Thor's enum validation being dropped, and bash not inheriting a
+  parent class option into its subcommands. All three pin a known defect. When one is fixed, that
+  example is meant to fail — read it as the fix landing, not as a regression.
+
+`lib/` sits at 100% line and branch coverage. That says nothing about whether a generated script
+works: a description containing `[` produces a syntactically valid script that zsh's `_arguments`
+refuses at completion time, and no example currently runs a script through a real shell.
