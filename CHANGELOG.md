@@ -2,6 +2,14 @@
 
 ## 0.5.3 (unreleased)
 
+**Features**
+
+* Offer the commands declared through Thor's `map`. A command reachable as `install` because of
+  `map "install" => :setup` is now completed under that name too, with its own function. Flag
+  aliases stay out of the command list — they are options — and so does an alias spelled like a
+  command that already exists, which would otherwise be listed twice. An alias pointing at a
+  subcommand is not offered: the subcommand remains completable under its own name.
+
 **Fixes**
 
 * Escape the characters that are live inside a zsh optspec. An unescaped `[` or `]` in a

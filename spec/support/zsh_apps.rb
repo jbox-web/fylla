@@ -153,6 +153,34 @@ module Zsh
     end
   end
 
+  # Commands reachable under a name that is not their method name. Thor keeps
+  # those in +map+, which the completion must offer alongside the real names.
+  module Aliases
+    class Sub < ThorTest
+      desc "leaf", "a leaf"
+      def leaf; end
+    end
+
+    class Main < ThorTest
+      map "install" => :setup
+      map "-v" => :version
+      # An alias spelled like the command it points at: must not be emitted a
+      # second time.
+      map "setup" => :setup
+      # Aliasing a subcommand: deliberately not offered, see aliased_commands.
+      map "sc" => :subcommand
+
+      desc "setup", "set the project up"
+      def setup; end
+
+      desc "version", "print the version"
+      def version; end
+
+      desc "subcommand", "nested subcommand"
+      subcommand "subcommand", Sub
+    end
+  end
+
   # Descriptions carrying characters that are meaningful to zsh: brackets
   # delimit the description inside an _arguments optspec, and `$(…)` / backticks
   # are substituted when the completion function runs.

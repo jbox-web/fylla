@@ -41,5 +41,23 @@ module Bash
       desc "subcommand2", "nested subcommand"
       subcommand "subcommand2", SubcommandWithOptions
     end
+
+    # Commands reachable under a name that is not their method name. Thor keeps
+    # those in +map+, which the completion must offer alongside the real names.
+    class Aliased < ThorHelper
+      map "install" => :setup
+      map "-v" => :version
+      # Aliasing a subcommand: deliberately not offered, see aliased_commands.
+      map "sc" => :subcommand
+
+      desc "setup", "set the project up"
+      def setup; end
+
+      desc "version", "print the version"
+      def version; end
+
+      desc "subcommand", "nested subcommand"
+      subcommand "subcommand", Subcommand
+    end
   end
 end

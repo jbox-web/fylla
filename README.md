@@ -71,6 +71,31 @@ option :env,
 * `filter` only applies to `type: :array` options declared with an `enum:`. It defaults to `true`,
   which removes already-typed values from further completions.
 
+### Aliased commands
+
+Commands declared under another name with Thor's `map` are completed under that name too:
+
+```ruby
+class CLI < Thor
+  map "install" => :setup
+
+  desc "setup", "set the project up"
+  def setup; end
+end
+```
+
+`setup` and `install` are both offered, each with its own completion function.
+
+Three cases are deliberately left out:
+
+* **Flag aliases** (`map "-v" => :version`) are options, not commands, so they never appear in the
+  command list. This also covers the `-h`, `-?`, `--help`, `-D`, `-t` and `--tree` entries Thor
+  injects into every application.
+* **An alias spelled like an existing command** is dropped, otherwise the command would be listed
+  twice and its function defined twice.
+* **An alias pointing at a subcommand** is not offered. The subcommand itself stays completable
+  under its own name.
+
 ### Side effects on Thor
 
 Requiring `fylla` prepends three modules into Thor, which changes the behaviour of your whole

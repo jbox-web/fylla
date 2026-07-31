@@ -44,7 +44,7 @@ module Fylla
     # Wrap the whole application in a nameless subcommand, so that the top
     # level needs no special case anywhere downstream.
     def root_command
-      commands = find_commands(@thor_class.all_commands, @thor_class.subcommand_classes)
+      commands = find_commands(@thor_class.all_commands, @thor_class.subcommand_classes, @thor_class.map)
       ParsedSubcommand.new(nil, "", commands, @thor_class.class_options.values)
     end
 
@@ -84,9 +84,35 @@ module Fylla
     #
     # @param command_map [Hash<String, Thor::Command>]
     # @param subcommand_map [Hash<String, Class>]
-    def find_commands(command_map, subcommand_map)
-      command_map.to_h { |name, command| [command, subcommand_map[name]] }
-                 .map { |command, klass| build_node(command, klass) }
+    # @param aliases [Hash<String, Symbol>] Thor's +map+, alias => command name
+    def find_commands(command_map, subcommand_map, aliases = {})
+      nodes = command_map.to_h { |name, command| [command, subcommand_map[name]] }
+                         .map { |command, klass| build_node(command, klass) }
+
+      nodes + aliased_commands(nodes, aliases)
+    end
+
+    # A command declared under another name (map "install" => :setup) is
+    # reachable under that name, so completion must offer it too.
+    #
+    # Three exclusions. Flag aliases are options, not commands: Thor injects
+    # -h, -?, --help, -D, -t and --tree into every application, and an app may
+    # add its own (-v). An alias spelled like a command that already exists
+    # would emit a second, identical function and list the command twice in the
+    # menu. Subcommands are left out as well — an alias node would emit a second
+    # copy of the whole nested function tree under a different breadcrumb.
+    def aliased_commands(nodes, aliases)
+      leaves = nodes.grep(ParsedCommand).to_h { |node| [node.name.to_s, node] }
+      taken = nodes.map { |node| node.name.to_s }
+
+      aliases.filter_map { |name, target| alias_node(name.to_s, target.to_s, leaves, taken) }
+    end
+
+    def alias_node(name, target, leaves, taken)
+      return if name.start_with?("-") || taken.include?(name)
+
+      leaf = leaves[target]
+      ParsedCommand.new(leaf.description, name, leaf.options) if leaf
     end
 
     def build_node(command, subcommand_class)
@@ -95,7 +121,8 @@ module Fylla
         return ParsedCommand.new(command.description, command.name, options)
       end
 
-      commands = find_commands(subcommand_class.commands, subcommand_class.subcommand_classes)
+      commands = find_commands(subcommand_class.commands, subcommand_class.subcommand_classes,
+                               subcommand_class.map)
       ParsedSubcommand.new(command.name, command.description, commands,
                            subcommand_class.class_options.values)
     end

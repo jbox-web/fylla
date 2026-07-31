@@ -31,6 +31,38 @@ RSpec.describe Fylla::Thor::CompletionGenerator do
     end
   end
 
+  # A command mapped to another name (map "install" => :setup) is reachable under
+  # that name, so completion must offer it. Flag aliases (-v, and the -h / -? / -D
+  # Thor injects into every application) are options, not commands, and must stay
+  # out of the command list.
+  describe "the generated bash script for aliased commands" do
+    subject(:script) { bash_script(Bash::CLI::Aliased) }
+
+    before { skip "bash is not available" unless shell_available?("bash") }
+
+    it "offers the alias alongside the method name" do
+      candidates = bash_completions(script, ["test", ""], 1, "_test")
+
+      expect(candidates).to include("setup", "install")
+    end
+
+    it "does not offer flag aliases as commands" do
+      candidates = bash_completions(script, ["test", ""], 1, "_test")
+
+      expect(candidates).to_not include("-v", "-h", "-?", "-D")
+    end
+
+    # An alias node for a subcommand would emit a second copy of the whole nested
+    # function tree under a different breadcrumb; the subcommand itself is still
+    # offered under its own name.
+    it "does not offer an alias that points at a subcommand" do
+      candidates = bash_completions(script, ["test", ""], 1, "_test")
+
+      expect(candidates).to include("subcommand")
+      expect(candidates).to_not include("sc")
+    end
+  end
+
   describe "the generated zsh script" do
     subject(:script) { zsh_script(Zsh::HostileDescriptions::Main, "hostile") }
 

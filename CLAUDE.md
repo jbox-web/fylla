@@ -56,7 +56,10 @@ with a method the host application declares.
    name is therefore meaningful, not a bug; the bash `subcommand.erb` falls back to
    `@executable_name` for it.
 2. `#find_commands` zips `Thor.commands` against `Thor.subcommand_classes`: a nil match means a
-   leaf → `ParsedCommand`; otherwise recurse → `ParsedSubcommand`.
+   leaf → `ParsedCommand`; otherwise recurse → `ParsedSubcommand`. `#aliased_commands` then adds
+   one node per entry of `Thor.map`, skipping three cases: flag aliases (Thor injects `-h`, `-?`,
+   `--help`, `-D`, `-t` and `--tree` into every app), a name already carried by a command, and
+   aliases pointing at a subcommand, which would duplicate the whole nested function tree.
 3. `#render` walks that tree, accumulating a `context_name` breadcrumb (`_sub1_sub2`) that becomes
    the shell function name, and `class_options` down the subcommand chain. `#merge_class_options`
    parses only the Thor options and dedupes by name: re-parsing an already built `ParsedOption`
