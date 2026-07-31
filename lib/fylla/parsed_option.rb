@@ -1,10 +1,21 @@
+# frozen_string_literal: true
+
 module Fylla
+  #
+  # A +Thor::Option+ reduced to what the ERB templates need: the switch name,
+  # its aliases, the text to display, and two precomputed shell fragments.
+  #
+  # +equals_type+ is +"="+ for every option that takes a value and +""+ for
+  # booleans. +action+ is the zsh completion action derived from +enum:+ —
+  # a +_values+ / +_sequence+ call for arrays, a plain alternatives list for
+  # strings, and an empty string when the option has no +enum:+.
   class ParsedOption
     attr_accessor :aliases, :description, :name
     # used just for parsing class_options recursively. Don't ever set these.
     # used for erb file action
     attr_reader :completion, :banner, :enum, :filter, :type, :action, :equals_type
 
+    # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
     def initialize(name, description, aliases, enum, filter, type)
       @name = name
       @description = description
@@ -19,13 +30,14 @@ module Fylla
       case type
       when :array
         @action = if filter
-                    %(: :_values -s , 'options' #{enum.join(" ")})
+                    %(: :_values -s , 'options' #{enum.join(' ')})
                   else
-                    %(: :_sequence -d compadd - #{enum.join(" ")})
+                    %(: :_sequence -d compadd - #{enum.join(' ')})
                   end
       when :string
-        @action = %|: :(#{enum.join(" ")})|
+        @action = %|: :(#{enum.join(' ')})|
       end
     end
+    # rubocop:enable Metrics/MethodLength, Metrics/ParameterLists
   end
 end

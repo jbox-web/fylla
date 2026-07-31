@@ -13,5 +13,54 @@ AllCops:
 Gemspec/RequireMFA:
   Enabled: false
 
+#########
+# STYLE #
+#########
+
 Style/StringLiterals:
   EnforcedStyle: double_quotes
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+##########
+# LAYOUT #
+##########
+
+Layout/EmptyLines:
+  Enabled: false
+
+Layout/EmptyLineBetweenDefs:
+  Enabled: false
+
+Layout/EmptyLinesAroundClassBody:
+  Enabled: false
+
+Layout/EmptyLinesAroundModuleBody:
+  Enabled: false
+
+Layout/EmptyLinesAroundBlockBody:
+  Enabled: false
+
+Layout/HashAlignment:
+  EnforcedColonStyle: table
+  EnforcedHashRocketStyle: table
+
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+
+###########
+# METRICS #
+###########
+
+# Golden-output tests embed whole completion scripts as heredocs.
+Metrics/MethodLength:
+  Exclude:
+    - test/**/*
+
+Metrics/ClassLength:
+  Exclude:
+    - test/**/*

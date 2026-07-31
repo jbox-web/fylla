@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../test_helper"
 # require_relative 'test_commands/plain_subcommand'
 require_relative "test_commands/thor_test"
@@ -7,13 +9,13 @@ module Zsh
     class Main < ThorTest
       desc "completion", "use completion flag for description"
       option :test,
-             fylla: { completion: "completion" },
-             desc: "shouldn't be used if completion is present",
+             fylla:  { completion: "completion" },
+             desc:   "shouldn't be used if completion is present",
              banner: "shouldn't be used if completion is present"
       def completion; end
       desc "desc", "use description flag for description"
       option :test,
-             desc: "desc",
+             desc:   "desc",
              banner: "shouldn't be used if desc is present"
       def desc; end
       desc "banner", "use banner flag for description"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../test_helper"
 # require_relative 'test_commands/plain_subcommand'
 require_relative "test_commands/thor_test"
@@ -16,8 +18,8 @@ module Zsh
       def command2; end
       desc "command3", "command3"
       option :test,
-             type: :array,
-             enum: %w[enum1 enum2 enum3],
+             type:  :array,
+             enum:  %w[enum1 enum2 enum3],
              fylla: { filter: false }
       def command3; end
       desc "command4", "command4"

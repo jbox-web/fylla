@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 require "thor"
 
 module Zsh
   class ThorTest < Thor
     include Thor::Base
+
     desc "generate_completions", "generate completions"
 
     def generate_completions

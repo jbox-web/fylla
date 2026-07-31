@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bash
   module CLI
     class ThorHelper < Thor

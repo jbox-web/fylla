@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "parsed_option"
 require_relative "parsed_command"
 require_relative "parsed_subcommand"
@@ -95,14 +97,15 @@ module Fylla
           "#{context}#{command_name}"
         end
 
+        # rubocop:disable Metrics/MethodLength
         def generate_completion_string(command, class_options, context_name, style)
           builder = ""
           if command.is_a? ParsedSubcommand
             class_options = parse_options((class_options + command.class_options).uniq)
             builder += map_to_completion_string(command.commands,
-                                                context: context_name,
+                                                context:       context_name,
                                                 class_options: class_options,
-                                                style: style)
+                                                style:         style)
 
             builder += create_completion_string(read_template(style, :subcommand), binding)
           else
@@ -110,6 +113,7 @@ module Fylla
           end
           builder
         end
+        # rubocop:enable Metrics/MethodLength
 
         # Recursively generate a command map based off
         # of the commands and subcommands passed in.
@@ -122,8 +126,9 @@ module Fylla
         #   a map to recursively generate a completion layout
         # @param subcommand_map [Hash<String, Class < Thor>]
         #   a map indicating the subcommands and their respective classes
+        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         def recursively_find_commands(command_map, subcommand_map)
-          map = Hash[command_map.map { |k, v| [v, subcommand_map[k]] }]
+          map = command_map.to_h { |k, v| [v, subcommand_map[k]] }
           map.map do |command, subcommand_class|
             if subcommand_class.nil?
               ancestor_name = command.ancestor_name if command.respond_to? :ancestor_name
@@ -137,6 +142,7 @@ module Fylla
             end
           end
         end
+        # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
         # Top level method to begin the recursive map generation
         # This is needed because we don't have a 'top' level
@@ -169,8 +175,8 @@ module Fylla
         #   can be either :zsh or :bash
         # @return [String] template string retrieved from erb file
         def read_template(style, name)
-          style = style.is_a?(Symbol) ? style.to_s : style
-          name = name.is_a?(Symbol) ? name.to_s : name
+          style = style.to_s if style.is_a?(Symbol)
+          name = name.to_s if name.is_a?(Symbol)
           erb_path = "erb_templates/#{style}/#{name}.erb"
           File.read(File.join(__dir__, erb_path))
         end

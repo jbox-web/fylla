@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../test_helper"
 # require_relative 'test_commands/plain_subcommand'
 require_relative "test_commands/thor_test"
@@ -21,7 +23,7 @@ class WeirdDescriptionsTest < Minitest::Test
   end
 
   def test_single_quote_escape
-    expected = <<~'HERE'
+    expected = <<~HERE
       'singlequote:Description with single quote '"'"''
     HERE
 
