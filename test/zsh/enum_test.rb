@@ -25,6 +25,11 @@ module Zsh
       desc "command4", "command4"
       option :test
       def command4; end
+      desc "command5", "command5"
+      option :test,
+             type: :numeric,
+             enum: [1, 2, 3]
+      def command5; end
     end
   end
 end
@@ -91,6 +96,25 @@ class EnumTest < Minitest::Test
       function _options_command4 {
         _arguments \
           "--test=[TEST]" \
+          "-h[Show help information]" \
+          "--help[Show help information]"
+      }
+    HERE
+
+    ARGV.clear
+    ARGV << "generate_completions"
+    assert_output(matches(expected)) do
+      Zsh::EnumTest::Main.start(ARGV)
+    end
+  end
+
+  # Only :array and :string enums produce a completion action; any other type
+  # falls through and the switch is completed without its allowed values.
+  def test_enum_on_an_unhandled_type_produces_no_action
+    expected = <<~'HERE'
+      function _options_command5 {
+        _arguments \
+          "--test=[N]" \
           "-h[Show help information]" \
           "--help[Show help information]"
       }

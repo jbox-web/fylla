@@ -131,9 +131,8 @@ module Fylla
           map = command_map.to_h { |k, v| [v, subcommand_map[k]] }
           map.map do |command, subcommand_class|
             if subcommand_class.nil?
-              ancestor_name = command.ancestor_name if command.respond_to? :ancestor_name
               options = parse_options(command.options.values)
-              ParsedCommand.new(ancestor_name, command.description, command.name, options)
+              ParsedCommand.new(command.ancestor_name, command.description, command.name, options)
             else
               commands = recursively_find_commands subcommand_class.commands,
                                                    subcommand_class.subcommand_classes
@@ -175,8 +174,6 @@ module Fylla
         #   can be either :zsh or :bash
         # @return [String] template string retrieved from erb file
         def read_template(style, name)
-          style = style.to_s if style.is_a?(Symbol)
-          name = name.to_s if name.is_a?(Symbol)
           erb_path = "erb_templates/#{style}/#{name}.erb"
           File.read(File.join(__dir__, erb_path))
         end
