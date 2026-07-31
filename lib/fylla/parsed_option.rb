@@ -11,9 +11,8 @@ module Fylla
   # strings, and an empty string when the option has no +enum:+.
   class ParsedOption
     attr_accessor :aliases, :description, :name
-    # used just for parsing class_options recursively. Don't ever set these.
-    # used for erb file action
-    attr_reader :completion, :banner, :enum, :filter, :type, :action, :equals_type
+    # Read by the ERB templates.
+    attr_reader :action, :equals_type, :switch_name
 
     # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
     def initialize(name, description, aliases, enum, filter, type)
@@ -22,6 +21,8 @@ module Fylla
       # Thor >= 1.3 already stores aliases dash-prefixed ("-a"), older versions
       # store them bare ("a"). Normalize so templates can emit them verbatim.
       @aliases = Array(aliases).map { |a| a.to_s.sub(/^(?!-)/, "-") }
+      # Thor's canonical spelling, underscores dashified, as shown by `thor help`
+      @switch_name = "--#{name.to_s.tr('_', '-')}"
       # used for switches that take values (everything, but not necessary for boolean)
       @equals_type = type == :boolean ? "" : "="
       @action = ""

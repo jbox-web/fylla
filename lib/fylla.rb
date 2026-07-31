@@ -23,27 +23,41 @@ module Fylla
   # @param executable_name [String] name of your thor executable, must be provided
   # here or through #self.zsh_completion or #self.bash_completion
   def self.load(executable_name = nil)
-    @executable_name = executable_name || nil
+    @executable_name = executable_name
     ::Thor.prepend Fylla::Thor::CompletionGenerator
   end
 
   #
-  # Method to generate bash completions for the current [Thor] application
-  # @param binding [Binding] _must always be self_
+  # Method to generate zsh completions for the current [Thor] application
+  # @param thor_instance [Thor] _must always be self_
   # @param executable_name [String] name of your thor executable,
   #   must either be provided through #self.load or here.
+  # @raise [ArgumentError] when no executable name is available
   # @return [String] containing the entire zsh completion script.
-  def self.zsh_completion(binding, executable_name = @executable_name)
-    binding.class.zsh_completion(executable_name)
+  def self.zsh_completion(thor_instance, executable_name = @executable_name)
+    thor_instance.class.zsh_completion(check_executable_name!(executable_name))
   end
 
   #
   # Method to generate bash completions for the current [Thor] application
-  # @param binding [Binding] _must always be self_
+  # @param thor_instance [Thor] _must always be self_
   # @param executable_name [String] name of your thor executable,
   #   must either be provided through #self.load or here.
+  # @raise [ArgumentError] when no executable name is available
   # @return [String] containing the entire bash completion script.
-  def self.bash_completion(binding, executable_name = @executable_name)
-    binding.class.bash_completion(executable_name)
+  def self.bash_completion(thor_instance, executable_name = @executable_name)
+    thor_instance.class.bash_completion(check_executable_name!(executable_name))
   end
+
+  #
+  # Without a name the generator still produces a script, but one naming every
+  # function `_` — valid shell, completely inert, and exiting 0. Fail loudly
+  # instead of letting the caller install it.
+  def self.check_executable_name!(executable_name)
+    return executable_name unless executable_name.nil? || executable_name.to_s.empty?
+
+    raise ArgumentError,
+          "fylla needs the executable name: pass it to Fylla.load or to the completion method"
+  end
+  private_class_method :check_executable_name!
 end

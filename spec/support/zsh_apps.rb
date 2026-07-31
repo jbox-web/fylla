@@ -153,6 +153,29 @@ module Zsh
     end
   end
 
+  # Descriptions carrying characters that are meaningful to zsh: brackets
+  # delimit the description inside an _arguments optspec, and `$(…)` / backticks
+  # are substituted when the completion function runs.
+  module HostileDescriptions
+    class Main < ThorTest
+      desc "brackets", "a command"
+      option :opt, desc: "value [a|b] required"
+      def brackets; end
+
+      desc "substitution", "a command"
+      option :sub, desc: "defaults to $(hostname)"
+      def substitution; end
+
+      desc "backtick", "a command"
+      option :tick, desc: "uses `date` internally"
+      def backtick; end
+
+      desc "backslash", "a command"
+      option :slash, desc: "ends with a backslash \\"
+      def backslash; end
+    end
+  end
+
   module WeirdDescriptions
     class Main < ThorTest
       desc "singlequote", "Description with single quote '"

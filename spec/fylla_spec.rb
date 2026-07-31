@@ -32,6 +32,27 @@ RSpec.describe Fylla do
     end
   end
 
+  describe "a missing executable name" do
+    # Without it the generator used to emit `#compdef _ ` and functions named
+    # `__help`, exit 0, and leave the user installing a dead script.
+    before { described_class.load }
+
+    it "is refused by the zsh generator" do
+      expect { described_class.zsh_completion(Zsh::PlainSubcommands::Main.new) }
+        .to raise_error(ArgumentError, /executable name/)
+    end
+
+    it "is refused by the bash generator" do
+      expect { described_class.bash_completion(Bash::CLI::Subcommand.new) }
+        .to raise_error(ArgumentError, /executable name/)
+    end
+
+    it "is refused when given as an empty string" do
+      expect { described_class.zsh_completion(Zsh::PlainSubcommands::Main.new, "") }
+        .to raise_error(ArgumentError, /executable name/)
+    end
+  end
+
   describe "help output" do
     it "describes the nested subcommands" do
       output = capture_stdout do

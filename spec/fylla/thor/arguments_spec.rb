@@ -17,19 +17,35 @@ RSpec.describe Fylla::Thor::Arguments do
     end
   end
 
-  context "with consecutive commas" do
-    let(:argv) { ["tags", "--tags", "a,,b"] }
-
-    it "keeps the empty segments" do
-      expect(parsed).to eq %(["a", "", "b"]\n)
-    end
-  end
-
   context "with Thor's own space separated form" do
     let(:argv) { ["tags", "--tags", "a", "b", "c"] }
 
     it "is still accepted" do
       expect(parsed).to eq %(["a", "b", "c"]\n)
+    end
+  end
+
+  context "with a comma in a later token" do
+    let(:argv) { ["tags", "--tags", "a", "b,c"] }
+
+    it "splits it too, the two notations mix freely" do
+      expect(parsed).to eq %(["a", "b", "c"]\n)
+    end
+  end
+
+  context "with a comma in the first token and more tokens after it" do
+    let(:argv) { ["tags", "--tags", "a,b", "c"] }
+
+    it "consumes every token instead of stopping at the first" do
+      expect(parsed).to eq %(["a", "b", "c"]\n)
+    end
+  end
+
+  context "with consecutive commas" do
+    let(:argv) { ["tags", "--tags", "a,,b"] }
+
+    it "drops the empty segments" do
+      expect(parsed).to eq %(["a", "b"]\n)
     end
   end
 
@@ -41,25 +57,39 @@ RSpec.describe Fylla::Thor::Arguments do
     end
   end
 
-  # CHARACTERIZATION, NOT DESIRED BEHAVIOUR.
-  # Splitting is decided on the *first* token only, so a comma appearing in any
-  # later token is left untouched and the two notations cannot be mixed.
-  context "with a comma in a later token" do
-    let(:argv) { ["tags", "--tags", "a", "b,c"] }
+  describe "enum validation" do
+    context "with values inside the declared enum" do
+      let(:argv) { ["envs", "--envs", "dev,prod"] }
 
-    it "does not split it" do
-      expect(parsed).to eq %(["a", "b,c"]\n)
+      it "accepts them" do
+        expect(parsed).to eq %(["dev", "prod"]\n)
+      end
     end
-  end
 
-  # CHARACTERIZATION, NOT DESIRED BEHAVIOUR.
-  # Thor validates every value of an enum array option in its own parse_array;
-  # this override drops that call, so invalid values are silently accepted.
-  context "with a value outside the declared enum" do
-    let(:argv) { ["envs", "--envs", "bogus"] }
+    # The fixture declares exit_on_failure?, as a real CLI does, so Thor reports
+    # the error on stderr and exits rather than letting the exception through.
+    context "with a value outside the declared enum" do
+      let(:argv) { ["envs", "--envs", "bogus"] }
 
-    it "accepts it instead of rejecting it" do
-      expect(parsed).to eq %(["bogus"]\n)
+      it "rejects it, as Thor does for its own array options" do
+        message = capture_stderr do
+          expect { ThorExtensions::CommaArrayCli.start(argv) }.to raise_error(SystemExit)
+        end
+
+        expect(message).to include("Expected all values of '--envs' to be one of dev, prod")
+      end
+    end
+
+    context "with a valid value and an invalid one in the same comma list" do
+      let(:argv) { ["envs", "--envs", "dev,bogus"] }
+
+      it "rejects the whole option" do
+        message = capture_stderr do
+          expect { ThorExtensions::CommaArrayCli.start(argv) }.to raise_error(SystemExit)
+        end
+
+        expect(message).to include("got bogus")
+      end
     end
   end
 

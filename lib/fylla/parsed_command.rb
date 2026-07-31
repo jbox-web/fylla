@@ -6,10 +6,9 @@ module Fylla
   # its own. Rendered through the +command.erb+ template of the target shell,
   # which emits one completion function listing the command's own options.
   class ParsedCommand
-    attr_accessor :ancestor_name, :description, :name, :options
+    attr_accessor :description, :name, :options
 
-    def initialize(ancestor_name, description, name, options)
-      @ancestor_name = ancestor_name
+    def initialize(description, name, options)
       @description = description
       @name = name
       @options = options

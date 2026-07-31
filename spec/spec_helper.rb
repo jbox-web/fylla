@@ -23,6 +23,15 @@ module FyllaTest
     $stdout = original
   end
 
+  def capture_stderr
+    original = $stderr
+    $stderr = StringIO.new
+    yield
+    $stderr.string
+  ensure
+    $stderr = original
+  end
+
   def zsh_script(klass, executable_name = "test")
     Fylla.load(executable_name)
     capture_stdout { klass.start(["generate_completions"]) }

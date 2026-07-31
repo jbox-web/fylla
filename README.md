@@ -77,9 +77,9 @@ Requiring `fylla` prepends three modules into Thor, which changes the behaviour 
 application, not only completion generation:
 
 * `Thor::Option` gains the `fylla:` key described above.
-* `Thor::Arguments` parses `type: :array` options as comma-separated (`--tags a,b,c`) in addition
-  to Thor's space-separated form. Note that the split is currently decided on the first token only,
-  and that Thor's `enum:` validation is not applied to array options while fylla is loaded.
+* `Thor::Arguments` parses `type: :array` options as comma-separated (`--tags a,b,c`) on top of
+  Thor's space-separated form (`--tags a b c`). The two mix freely, and empty segments are dropped.
+  Values are still checked against the option's `enum:`, as Thor does for its own array options.
 * `Fylla.load` prepends the generator itself, adding `zsh_completion` and `bash_completion` to
   every Thor class in the process.
 

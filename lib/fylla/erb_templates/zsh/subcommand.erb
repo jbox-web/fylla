@@ -5,17 +5,18 @@ function _<%= @executable_name %><%= context_name %> {
   commands=(
   <%-# remove newlines and leading space on this loop -%>
   <%- command.commands.sort_by(&:name).each do |command| -%>
-    '<%= command.name %>:<%= command.description.gsub("'", %q|'"'"'|) %>'
+    '<%= command.name %>:<%= Fylla::ShellEscape.zsh_single_quoted(command.description) %>'
   <%- end -%>
   )
   <%- end %>
   _arguments \
   <%- unless class_options.nil? -%>
     <%- class_options.each do |option| -%>
+      <%- desc = Fylla::ShellEscape.zsh_optspec(option.description) -%>
+    "--<%= option.name %><%= option.equals_type %>[<%= desc %>]<%= option.action %>" \
       <%- option.aliases.each do |al| -%>
-    "<%= al %>[<%= option.description.gsub('"', %q|\\"|) %>]" \
+    "<%= al %><%= option.equals_type %>[<%= desc %>]<%= option.action %>" \
       <%- end -%>
-    "--<%= option.name %>[<%= option.description.gsub('"', %q|\\"|) %>]" \
     <%- end -%>
   <%- end -%>
     "-h[Show help information]" \

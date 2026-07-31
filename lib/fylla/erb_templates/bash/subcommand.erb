@@ -32,5 +32,5 @@ _<%= @executable_name %><%= context_name %>() {
   done
 
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  COMPREPLY=($(compgen -W "<%= command.commands.map(&:name).join(" ") %> <%= command.class_options.map(&:switch_name).join(" ") %>" -- "$cur"))
+  COMPREPLY=($(compgen -W "<%= command.commands.map(&:name).join(" ") %> <%= class_options.map(&:switch_name).join(" ") %>" -- "$cur"))
 }

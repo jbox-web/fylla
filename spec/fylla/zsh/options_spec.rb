@@ -42,8 +42,11 @@ RSpec.describe Fylla::Thor::CompletionGenerator do
     context "when no description is given" do
       let(:app) { Zsh::OptionsApp::ClassOptionNoDesc }
 
-      it "falls back to the upcased name" do
-        expect(script).to include(%(    "--klass[KLASS]" \\\n))
+      # A class option that takes a value must carry its equals sign and, when
+      # declared with an enum, its completion action — exactly like a command
+      # option does.
+      it "falls back to the upcased name, and takes an equals sign" do
+        expect(script).to include(%(    "--klass=[KLASS]" \\\n))
       end
     end
 
@@ -62,7 +65,7 @@ RSpec.describe Fylla::Thor::CompletionGenerator do
             )
 
             _arguments \
-              "--klass[KLASS]" \
+              "--klass=[KLASS]" \
               "-h[Show help information]" \
               "--help[Show help information]" \
               "1: : _describe 'command' commands" \

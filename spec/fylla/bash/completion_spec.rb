@@ -77,13 +77,8 @@ RSpec.describe Fylla::Thor::CompletionGenerator do
       )
     end
 
-    # CHARACTERIZATION, NOT DESIRED BEHAVIOUR.
-    # The bash subcommand template reads the node's own class_options instead of
-    # the set accumulated while walking down the tree, so a class option
-    # declared on the parent is not offered inside its subcommands. The zsh
-    # template does inherit it.
-    it "does not offer the inherited class option inside a subcommand" do
-      expect(script).to include(%(COMPREPLY=($(compgen -W "plain help " -- "$cur"))))
+    it "offers the inherited class option inside a subcommand, as zsh does" do
+      expect(script).to include(%(COMPREPLY=($(compgen -W "plain help --class-opt" -- "$cur"))))
     end
   end
 

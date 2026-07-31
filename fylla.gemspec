@@ -21,10 +21,10 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 3.2.0"
 
-  s.files = Dir["README.md", "CHANGELOG.md", "LICENSE", "lib/**/*.rb", "lib/**/*.erb", "exe/*"]
+  s.files = Dir["README.md", "CHANGELOG.md", "LICENSE", "lib/**/*.rb", "lib/**/*.erb"]
 
-  s.bindir      = "exe"
-  s.executables = ["fylla"]
 
-  s.add_dependency "thor", ">= 0.19.0"
+  # 1.3.0 is where Thor::Arguments gained validate_enum_value!, which the comma
+  # array extension calls to keep enum validation working. Absent in 1.2.2.
+  s.add_dependency "thor", ">= 1.3.0"
 end
