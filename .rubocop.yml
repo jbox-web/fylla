@@ -2,7 +2,7 @@
 plugins:
   - rubocop-performance
   - rubocop-rake
-  - rubocop-minitest
+  - rubocop-rspec
 
 AllCops:
   NewCops: enable
@@ -52,15 +52,39 @@ Layout/HashAlignment:
 Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
 
+#########
+# RSPEC #
+#########
+
+RSpec/NotToNot:
+  EnforcedStyle: to_not
+
+# spec/support holds real Thor applications, not examples: printing their
+# completion script on stdout is the behaviour under test.
+RSpec/Output:
+  Exclude:
+    - spec/support/**/*
+
+# The generation specs are split by concern (zsh options, zsh enums, bash
+# scripts), not one file per class, so their path cannot match the class they
+# describe.
+RSpec/SpecFilePathFormat:
+  Exclude:
+    - spec/fylla/**/*
+
+# Golden-output examples embed whole completion scripts as heredocs.
+RSpec/ExampleLength:
+  Exclude:
+    - spec/**/*
+
+RSpec/MultipleExpectations:
+  Exclude:
+    - spec/**/*
+
 ###########
 # METRICS #
 ###########
 
-# Golden-output tests embed whole completion scripts as heredocs.
 Metrics/MethodLength:
   Exclude:
-    - test/**/*
-
-Metrics/ClassLength:
-  Exclude:
-    - test/**/*
+    - spec/**/*

@@ -1,15 +1,13 @@
 # frozen_string_literal: true
 
-require_relative "../test_helper"
-require_relative "test_commands/plain_subcommand"
+require "spec_helper"
 
-class CompletionTest < Minitest::Test
-  def setup
-    Fylla.load("test")
-  end
+RSpec.describe Fylla::Thor::CompletionGenerator do
 
-  def test_cli_start_completion_generator
-    expected = <<~'HERE'
+  subject(:script) { zsh_script(Zsh::PlainSubcommands::Main) }
+
+  it "generates the whole script for a nested application" do
+    expected = <<~'SCRIPT'
       #compdef _test test
       function _test_help {
         _arguments \
@@ -111,12 +109,17 @@ class CompletionTest < Minitest::Test
         esac
       }
       _test "$@"
-    HERE
+    SCRIPT
 
-    ARGV.clear
-    ARGV << "generate_completions"
-    assert_output(expected) do
-      Zsh::PlainSubcommands::Main.start(ARGV)
-    end
+    expect(script).to eq expected
   end
+
+  it "declares the compdef header zsh needs to pick the script up" do
+    expect(script).to start_with("#compdef _test test\n")
+  end
+
+  it "defines a subcommand function before the parent that dispatches to it" do
+    expect(script.index("function _test_sub {")).to be < script.index("function _test {")
+  end
+
 end

@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
+require "thor"
+
 module Bash
   module CLI
     class ThorHelper < Thor
       desc "generate", "generate completions"
-
       def generate
         puts Fylla.bash_completion(self)
       end
@@ -12,7 +13,6 @@ module Bash
 
     class Subcommand < ThorHelper
       desc "plain", "plain subcommand"
-
       def plain
         puts "plain complete"
       end
@@ -21,19 +21,16 @@ module Bash
     class SubcommandWithOptions < ThorHelper
       option :opt1
       desc "plain", "plain subcommand"
-
       def plain
         puts "plain complete"
       end
     end
 
     class SubcommandWithNestedSubcommandsAndOptions < ThorHelper
-      class_option :class_opt,
-                   desc: "a global option"
+      class_option :class_opt, desc: "a global option"
 
       option :opt1
       desc "plain", "plain subcommand"
-
       def plain
         puts "plain complete"
       end
